@@ -107,6 +107,7 @@ def verify_headers(url):
 	    print "Error! Could not verify the url: " + url
     
 if __name__ == '__main__':
+    sys.stdout.write("\x1b[2J\x1b[H")
     link="https://storage101.ord1.clouddrive.com/v1/MossoCloudFS_2cea874d-6a69-44f0-84a5-f27fb040806b/"
     results = []
     error_list = []
