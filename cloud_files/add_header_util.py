@@ -87,7 +87,6 @@ def print_headers(url_list):
 	    sys.exit()
 
 def error_check(results):
-    #any(x is not None for x in list)
     if any(results):
 	print "\nThese URLS failed: "
 	for i in results:
@@ -96,20 +95,19 @@ def error_check(results):
 	print "No failures!"
 
 def verify_headers(url):
-    element = []
         results = requests.head(url, headers=header_token)
 	if results.status_code == 200:
 	    compare = set(headers.items()) & set(results.headers.items())
 	    if len(compare) == 0:
-		element.append(url)
+		print "ERROR! Missing header in:"
+		print url
 		for key, value in results.headers.items():
-		     line = key + ": " + value
-		     element.append(line)
-	        return element
+		     print key + ": " + value
 	else:
 	    print "Error! Could not verify the url: " + url
     
 if __name__ == '__main__':
+    sys.stdout.write("\x1b[2J\x1b[H")
     link="https://storage101.ord1.clouddrive.com/v1/MossoCloudFS_2cea874d-6a69-44f0-84a5-f27fb040806b/"
     results = []
     error_list = []
