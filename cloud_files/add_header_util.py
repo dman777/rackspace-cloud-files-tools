@@ -11,8 +11,13 @@ import pyrax
 def auth():
     url = "https://identity.api.rackspacecloud.com/v2.0/tokens"
     username =  raw_input("Please enter your username: ")
-    #token = raw_input("Please enter your API key: ")
-    password = raw_input("Please paste your password: ")
+    password = raw_input("Please enter your password: ")
+    link_url = raw_input("\nPlease enter your Cloud Files url\n"
+			  "Be sure to include a slash '/' at the end of the url!\n"
+			  "(Example- https://storage101.ord1.clouddrive.com/v1/MossoCloudFS_2ced834d-7055-24f0-14a5-e23fb032806b/)\n> ")
+    region = raw_input("Please ether ORD, DFW, IAD, or SYD for region: ")
+
+    region = region.upper()
 
     jsonreq = ( {"auth": {"passwordCredentials": {
 		  "username": username,
@@ -25,13 +30,14 @@ def auth():
 	jsonresp = json.loads(r.text)
 	token = str(jsonresp['access']['token']['id'])
 	tenant = str(jsonresp['access']['token']['tenant']['id'])
+
         pyrax.auth_with_token(token, tenant) 
     except:
         print "Bad name or password!"
         sys.exit()
  
-    cf = pyrax.connect_to_cloudfiles(region="ORD")    
-    return token, cf
+    cf = pyrax.connect_to_cloudfiles(region=region)    
+    return token, cf, link_url
 
 def container(cf, link):
     new_list = [] 
@@ -121,10 +127,10 @@ if __name__ == '__main__':
     sys.stdout.write("\x1b[2J\x1b[H")
     print "Add Header To Your Cloud Files! Ver. 1.5\n"
     
-    link="https://storage101.ord1.clouddrive.com/v1/MossoCloudFS_2cea874d-6a69-44f0-84a5-f27fb040806b/"
+    #link="https://storage101.ord1.clouddrive.com/v1/MossoCloudFS_2cea874d-6a69-44f0-84a5-f27fb040806b/"
     results = []
     error_list = []
-    token, cf = auth()
+    token, cf, link = auth()
     url_list = container(cf, link)
     get_headers(token)
 
@@ -139,13 +145,13 @@ if __name__ == '__main__':
 	#error_check(results)
 
 	value = raw_input("\nSafety Check - Verify all objects have the header? [Y/y] ")
+	value = value.upper()
 	if value == "Y":
 	    pool = multiprocessing.Pool(processes=8)
-            results = pool.map(verify_headers, url_list)
+            pool.map(verify_headers, url_list)
 	    pool.close()
 	    pool.join()
-	    if not results:
-		print"\nCongratulations! All object headers verified!"
+	    print "Done..."
 
 
     else:
