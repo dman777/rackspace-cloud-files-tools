@@ -3,6 +3,7 @@
 
 import os 
 import sys
+import getpass
 import json
 import multiprocessing
 import requests
@@ -11,13 +12,7 @@ import pyrax
 def auth():
     url = "https://identity.api.rackspacecloud.com/v2.0/tokens"
     username =  raw_input("Please enter your username: ")
-    password = raw_input("Please enter your password: ")
-    link_url = raw_input("\nPlease enter your Cloud Files url\n"
-			  "Be sure to include a slash '/' at the end of the url!\n"
-			  "(Example- https://storage101.ord1.clouddrive.com/v1/MossoCloudFS_2ced834d-7055-24f0-14a5-e23fb032806b/)\n> ")
-    region = raw_input("Please ether ORD, DFW, IAD, or SYD for region: ")
-
-    region = region.upper()
+    password = getpass.getpass("Please enter your password: ")
 
     jsonreq = ( {"auth": {"passwordCredentials": {
 		  "username": username,
@@ -36,17 +31,51 @@ def auth():
         print "Bad name or password!"
         sys.exit()
  
+    return token, jsonresp
+
+def get_link(jsonresp):
+    foo = jsonresp["access"]["serviceCatalog"]
+    for i in foo:
+	for value in i.values():
+	    if value == "cloudFiles":
+	        bar = i
+    
+    regions = [ 
+	{ str(bar["endpoints"][0]["region"]) : str(bar["endpoints"][0]["publicURL"]) },
+	{ str(bar["endpoints"][1]["region"]) : str(bar["endpoints"][1]["publicURL"]) },
+	{ str(bar["endpoints"][2]["region"]) : str(bar["endpoints"][2]["publicURL"]) },
+	{ str(bar["endpoints"][3]["region"]) : str(bar["endpoints"][3]["publicURL"])}]
+
+    sys.stdout.write("\x1b[2J\x1b[H")
+    print "Regions/URLs:"
+    for i, item in enumerate(regions):
+        for value in item.values():
+	    j=str(i+1)
+	    print "%s) %s" % (j, value)
+
+    value = raw_input("Please enter choice: ")
+    value = int(value)-1
+    while True:
+	try:
+	    link = regions[value].values()[0]+"/"
+	    region = regions[value].keys()[0]
+	    break
+	except IndexError:
+	    "Wrong value!"
     cf = pyrax.connect_to_cloudfiles(region=region)    
-    return token, cf, link_url
+    return cf, link
 
 def container(cf, link):
     new_list = [] 
     url_list = [] 
     
-    value = raw_input("Please enter container name: ")
+    #sys.stdout.write("\x1b[2J\x1b[H")
+    value = raw_input("\nPlease enter container name: ")
     try:    
         value = cf.get_container(value)
     except:
+	print link
+	print cf.list_containers()
         print "No Container Found!"
         sys.exit()
     
@@ -66,8 +95,8 @@ def container(cf, link):
 
 
 def get_headers(token):
-    header = raw_input("\nEnter header only(exclude colon)>  ")
-    value = raw_input("Please enter value of the header>  ")
+    header = raw_input("\nEnter header only(exclude colon)>")
+    value = raw_input("Please enter value of the header>")
 
     header = header.lower()
     value = value.lower()
@@ -125,12 +154,14 @@ def verify_headers(url):
     
 if __name__ == '__main__':
     sys.stdout.write("\x1b[2J\x1b[H")
-    print "Add Header To Your Cloud Files! Ver. 1.5\n"
+    print ("Add Header To ALL Your Cloud Files\n"
+           "     In A Container! Ver. 1.5\n")
     
     #link="https://storage101.ord1.clouddrive.com/v1/MossoCloudFS_2cea874d-6a69-44f0-84a5-f27fb040806b/"
     results = []
     error_list = []
-    token, cf, link = auth()
+    token, jsonrep = auth()
+    cf, link = get_link(jsonrep)
     url_list = container(cf, link)
     get_headers(token)
 
