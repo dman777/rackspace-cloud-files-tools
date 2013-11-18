@@ -1,4 +1,4 @@
-##Krunch Uploader Ver. #1
+##Krunch Uploader Ver. #1.0
 ##darin.hensley@rackspace.com
 
 import logging 
