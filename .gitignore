@@ -1,0 +1,26 @@
+# Python bytecode:
+*.py[co]
+
+# Packaging files:
+*.egg*
+
+# Editor temp files:
+*.swp
+*~
+
+# Sphinx docs:
+build
+
+# Logs:
+*.log
+
+*.bck
+
+#pycharm
+.idea
+
+#stratus exclude
+core.*
+ticket.*
+
+
