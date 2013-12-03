@@ -2,7 +2,7 @@ Krunch-Uploader
 ===============
 Python 2.7.*
 
-Module required: requests, dateutil
+Module required: requests
 
 Version 1.5 - Cloud Files Bulk Uploader with luxury and concurrency. Enter name, api key, mount point and it will do the rest.
 
