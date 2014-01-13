@@ -19,11 +19,13 @@ def auth():
 		  "apiKey": apikey }}}
 
     auth_headers = {'content-type': 'application/json'}
+    pyrax.set_setting("identity_type", "rackspace")
     try:
 	r = requests.post(url, data=json.dumps(jsonreq), headers=auth_headers)
 	jsonresp = json.loads(r.text)
 	token = str(jsonresp['access']['token']['id'])
 	tenant = str(jsonresp['access']['token']['tenant']['id'])
+	pyrax.auth_with_token(token, tenant)
 
     except:
         print "Bad name or password!"
