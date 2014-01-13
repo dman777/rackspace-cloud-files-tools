@@ -21,7 +21,6 @@ def auth():
     auth_headers = {'content-type': 'application/json'}
     try:
 	r = requests.post(url, data=json.dumps(jsonreq), headers=auth_headers)
-	print r.json()
 	jsonresp = json.loads(r.text)
 	token = str(jsonresp['access']['token']['id'])
 	tenant = str(jsonresp['access']['token']['tenant']['id'])
