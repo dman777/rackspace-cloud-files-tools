@@ -139,23 +139,33 @@ def get_link(jsonresp, region=None):
                 bar = i
 
     if not region:
-        regions = [
-            {str(bar["endpoints"][0]["region"]): str(bar["endpoints"][0]["publicURL"])},
-            {str(bar["endpoints"][1]["region"]): str(bar["endpoints"][1]["publicURL"])},
-            {str(bar["endpoints"][2]["region"]): str(bar["endpoints"][2]["publicURL"])},
-            {str(bar["endpoints"][3]["region"]): str(bar["endpoints"][3]["publicURL"])}]
-
         sys.stdout.write("\x1b[2J\x1b[H")
+        cloud_choice = raw_input("Use cloud internal network for uploading?(Y/y): ").upper()
+        if cloud_choice == "Y":
+            cloudURL = "internalURL"
+        else:
+            cloudURL = "publicURL"
+
+        regions = [
+            {str(bar["endpoints"][0]["region"]): str(bar["endpoints"][0][cloudURL])},
+            {str(bar["endpoints"][1]["region"]): str(bar["endpoints"][1][cloudURL])},
+            {str(bar["endpoints"][2]["region"]): str(bar["endpoints"][2][cloudURL])},
+            {str(bar["endpoints"][3]["region"]): str(bar["endpoints"][3][cloudURL])}]
+
         print "Please Pick A Datacenter:"
         for i, item in enumerate(regions):
             for value in item.values():
                 j = str(i + 1)
-                name = value[19:22].upper()
+                if cloudURL == "internalURL":
+                    name = value[24:27].upper()
+                else:
+                    name = value[19:22].upper()
                 print "%s) %s" % (j, name)
 
         value = raw_input("Please enter choice: ")
         value = int(value) - 1
         while True:
+                        
             try:
                 link = regions[value].values()[0] + "/"
                 region = regions[value].keys()[0]
@@ -168,7 +178,7 @@ def get_link(jsonresp, region=None):
                 print "Wrong value!"
     else:
         #For Stratus
-        link = [x.get("publicURL") for x in bar["endpoints"] if x["region"] == region]
+        link = [x.get("internalURL") for x in bar["endpoints"] if x["region"] == region]
         link = str(link[0]) + "/"
         msg = (
             "\n{}\n^This link will be used. Double check it!".format(link))
