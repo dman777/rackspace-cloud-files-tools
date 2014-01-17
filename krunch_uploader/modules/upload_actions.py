@@ -235,16 +235,17 @@ def upload_file(file_obj, file_quantity, retry_list, authenticate, q):
             if attempt_number == max_number_attempts_reached:
                 retry_list.append(file_obj)
             continue
-        elif src_md5 == r.headers['etag']:
-            file_quantity.deduct()
-            msg = (
-                'File \"{}\" successfully'
-                ' loaded with verified md5 \"{}\"'.format(filename, src_md5))
-            logger.info(msg)
-            msg = (
-                '{} out of {} files left'.format(file_quantity.quantity, file_quantity.total))
-            logger.info(msg)
-            break
+        elif 'etag' in r.headers: 
+            if src_md5 == r.headers['etag']:
+                file_quantity.deduct()
+                msg = (
+                    'File \"{}\" successfully'
+                    ' loaded with verified md5 \"{}\"'.format(filename, src_md5))
+                logger.info(msg)
+                msg = (
+                    '{} out of {} files left'.format(file_quantity.quantity, file_quantity.total))
+                logger.info(msg)
+                break
         else:
             msg = (
                 'File \"{}\" checksum verification failed with'
