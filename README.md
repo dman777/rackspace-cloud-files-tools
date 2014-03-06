@@ -1,2 +1,2 @@
-rack-api-tools
+rackspace-api-tools
 ==============
