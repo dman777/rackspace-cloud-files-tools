@@ -150,7 +150,8 @@ def get_link(jsonresp, region=None):
             {str(bar["endpoints"][0]["region"]): str(bar["endpoints"][0][cloudURL])},
             {str(bar["endpoints"][1]["region"]): str(bar["endpoints"][1][cloudURL])},
             {str(bar["endpoints"][2]["region"]): str(bar["endpoints"][2][cloudURL])},
-            {str(bar["endpoints"][3]["region"]): str(bar["endpoints"][3][cloudURL])}]
+            {str(bar["endpoints"][3]["region"]): str(bar["endpoints"][3][cloudURL])},
+            {str(bar["endpoints"][4]["region"]): str(bar["endpoints"][4][cloudURL])}]
 
         print "Please Pick A Datacenter:"
         for i, item in enumerate(regions):
